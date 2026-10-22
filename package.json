@@ -1,0 +1,41 @@
+{
+  "name": "kayon-mountain-it-solutions",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint app components data collections lib payload.config.ts next.config.ts",
+    "typecheck": "tsc --noEmit",
+    "payload:types": "payload generate:types",
+    "payload:importmap": "payload generate:importmap",
+    "payload:migrate": "payload migrate",
+    "payload:migrate:create": "payload migrate:create"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "3.90.2",
+    "framer-motion": "^12.23.12",
+    "graphql": "16.14.2",
+    "lucide-react": "^0.468.0",
+    "next": "16.4.0",
+    "payload": "3.90.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.6",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.2"
+  },
+  "type": "module"
+}

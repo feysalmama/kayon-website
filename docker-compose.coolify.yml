@@ -1,0 +1,52 @@
+# Git-based Docker Compose application in Coolify.
+# Assign the public domain to web's internal port 3000 in Coolify.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kayon
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Coolify}
+      POSTGRES_DB: kayon
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kayon -d kayon"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL in Coolify}
+        NEXT_PUBLIC_HERO_VIDEO: ${NEXT_PUBLIC_HERO_VIDEO:-}
+        NEXT_PUBLIC_PRINTER_VIDEO: ${NEXT_PUBLIC_PRINTER_VIDEO:-}
+        NEXT_PUBLIC_VISITOR_VIDEO: ${NEXT_PUBLIC_VISITOR_VIDEO:-}
+        NEXT_PUBLIC_IDENTITY_VIDEO: ${NEXT_PUBLIC_IDENTITY_VIDEO:-}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URI: postgres://kayon:${POSTGRES_PASSWORD}@db:5432/kayon?sslmode=disable
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET in Coolify}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:?Set PAYLOAD_PUBLIC_SERVER_URL in Coolify}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+    expose:
+      - "3000"
+    volumes:
+      - uploads:/app/data/uploads
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 60s
+
+volumes:
+  postgres-data:
+  uploads:
